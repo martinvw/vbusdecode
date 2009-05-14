@@ -1,5 +1,4 @@
 
-
 = Introduction =
 
 This is a utility for use with resol solar controllers (or rebranded alternatives)
@@ -18,3 +17,6 @@ For example;
 Resol Deltasol BS Plus  
   cat /dev/ttyUSB0 | vbusdecode 0,15,0.1 2,15,0.1 4,15,0.1 6,15,0.1 8,7,1 9,7,1 
   Will give out, temp of S1,S2,S3,S4 and pump1 speed and pump2
+
+Included is a sample of a serial port capture , raw.log, from a Resol Deltasol BS Plus ,so can you test with;
+  cat raw.log | vbusdecode 0,15,0.1 2,15,0.1 4,15,0.1 6,15,0.1 8,7,1 9,7,1 
