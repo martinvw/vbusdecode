@@ -1,4 +1,4 @@
-//sample ./a.out  0,15,0.1 2,15,0.1 4,15,0.1 6,15,0.1 8,7,1 9,7,1 10,8,1
+//sample cat raw.log | ./a.out  0,15,0.1 2,15,0.1 4,15,0.1 6,15,0.1 8,7,1 9,7,1 10,8,1
 #include <string>
 #include <stdio.h>
 #include <iostream>
