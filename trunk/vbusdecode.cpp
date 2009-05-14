@@ -11,11 +11,11 @@ unsigned char allframes[256];
 void giveresults(char parray[])
 {
 	int offset = atoi(strtok (parray,","));
-printf("%d ",offset);	
-//int length = atoi(strtok (NULL, ","));
-//	float multiplier =  atof(strtok (NULL, ","));
-//	float f = (allframes[offset] + (allframes[offset+1]*0x100)) * multiplier;
-//	printf ("%.2f ",f);
+// line below causes segfault
+	int length = atoi(strtok (NULL, ","));
+	float multiplier =  atof(strtok (NULL, ","));
+	float f = (allframes[offset] + (allframes[offset+1]*0x100)) * multiplier;
+	printf ("%.2f ",f);
 }
 
 int decodeheader()
