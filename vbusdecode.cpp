@@ -1,4 +1,5 @@
-//sample cat raw.log | ./a.out  0,15,0.1 2,15,0.1 4,15,0.1 6,15,0.1 8,7,1 9,7,1 10,8,1
+// sample  cat ../raw.log | ./a.out  0,15,0.1 2,15,0.1 4,15,0.1 6,15,0.1 8,7,1 9,7,1 20,16,1 22,16,1000 24,16,1000000
+// will give temp of s1,s2,s3,s4 pumpspeed pump1,pump2 and watts, Kw, Mw for a resol deltasol bs plus
 #include <string>
 #include <stdio.h>
 #include <iostream>
@@ -10,11 +11,16 @@ unsigned char allframes[256];
 
 void giveresults(char parray[])
 {
+	float f;
 	int offset = atoi(strtok (parray,","));
 	int length = atoi(strtok (NULL, ","));
 	float multiplier =  atof(strtok (NULL, ","));
-	float f = (allframes[offset] + (allframes[offset+1]*0x100)) * multiplier;
-	printf ("%.2f ",f);
+	if ( (length -1) /8) {
+		f = (allframes[offset] + (allframes[offset+1]*0x100)) * multiplier;
+	} else {
+		f = (allframes[offset] ) * multiplier;
+	}
+	printf ("%#.1f ",f);
 }
 
 int decodeheader()
@@ -91,15 +97,7 @@ int main(int argc, char* argv[])
 					allframes[(4*x)+2] =frame[2];
 					allframes[(4*x)+3] =frame[3];
 				}
-				for ( int y = 0; y < framecount ; y++ )
-				{ 
-					printf("%02x",allframes[(4*y)+0]);
-					printf("%02x ",allframes[(4*y)+1]);
-					printf("%02x",allframes[(4*y)+2]);
-					printf("%02x ",allframes[(4*y)+3]);
-				}
 
-				printf("\n");
 				for(int i = 1; i < argc; i++)
 				{
 					arg_dup = strdup(argv[i]);
