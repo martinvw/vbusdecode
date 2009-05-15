@@ -11,7 +11,6 @@ unsigned char allframes[256];
 void giveresults(char parray[])
 {
 	int offset = atoi(strtok (parray,","));
-// line below causes segfault
 	int length = atoi(strtok (NULL, ","));
 	float multiplier =  atof(strtok (NULL, ","));
 	float f = (allframes[offset] + (allframes[offset+1]*0x100)) * multiplier;
@@ -75,6 +74,7 @@ int main(int argc, char* argv[])
 {
 	char  buffer[2];
 	unsigned char a;	
+	char* arg_dup;
 	int framecount;
 	while ( fgets(buffer, 2, stdin) != NULL)
 	{
@@ -102,7 +102,9 @@ int main(int argc, char* argv[])
 				printf("\n");
 				for(int i = 1; i < argc; i++)
 				{
-					giveresults(argv[i]);
+					arg_dup = strdup(argv[i]);
+					giveresults(arg_dup);
+					free(arg_dup);
 				}
 				printf("\n");
 			}
