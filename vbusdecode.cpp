@@ -7,10 +7,12 @@ using namespace std;
 int model;
 unsigned char frame[4];
 unsigned char allframes[1026];
+string presults;
 
 void giveresults(char parray[])
 {
 	float f;
+	char results[24];
 	int offset = atoi(strtok (parray,","));
 	int length = atoi(strtok (NULL, ","));
 	float multiplier =  atof(strtok (NULL, ","));
@@ -19,7 +21,9 @@ void giveresults(char parray[])
 	} else {
 		f = (allframes[offset] ) * multiplier;
 	}
-	printf ("%#.1f ",f);
+
+	sprintf(results, "%#.1f ",f);
+	presults.append(results);
 }
 
 int decodeheader()
@@ -27,7 +31,6 @@ int decodeheader()
 	char  buffer[10];
 	unsigned char a;
 	unsigned char b;
-//	if ( fgets(buffer, 10, stdin) != NULL)
 	if (scanf("%c%c%c%c%c%c%c%c%c",&buffer[0],&buffer[1],&buffer[2],&buffer[3],&buffer[4],&buffer[5],&buffer[6],&buffer[7],&buffer[8],&buffer[9]) != 1)
 
 	{
@@ -52,7 +55,6 @@ unsigned char decodeframe(int x)
 	char  buffer[7] ;
 	unsigned char a;
 	unsigned char b;
-//	if ( fgets(buffer, 7, stdin) != NULL)
 	if (scanf("%c%c%c%c%c%c",&buffer[0],&buffer[1],&buffer[2],&buffer[3],&buffer[4],&buffer[5]) != 1)
 	{
 
@@ -85,8 +87,9 @@ int main(int argc, char* argv[])
 	unsigned char a;	
 	char* arg_dup;
 	int framecount;
+	FILE * pFile;
+
 	while ( fgets(buffer, 2, stdin) != NULL)
-//	while (scanf("%c",&buffer[0]) != 1)
 	{
 		a = buffer[0];
 		if ( a ==  0xAA) {
@@ -101,13 +104,30 @@ int main(int argc, char* argv[])
 					allframes[(4*x)+2] =frame[2];
 					allframes[(4*x)+3] =frame[3];
 				}
+				string filen = "stdout";
 				for(int i = 1; i < argc; i++)
 				{
-					arg_dup = strdup(argv[i]);
-					giveresults(arg_dup);
-					free(arg_dup);
+					string sw = argv[i];
+					if (sw == "-f") {
+						i++;
+						filen = argv[i]; 
+					} 
+					else
+					{
+						arg_dup = strdup(argv[i]);
+						giveresults(arg_dup);
+						free(arg_dup);
+					}
 				}
-				printf("\n");
+				if (filen == "stdout")
+				{
+					 fprintf(stdout,"%s\n",presults.c_str());
+				} else {
+					pFile = fopen (filen.c_str(),"w");
+					fprintf (pFile,"%s\n",presults.c_str());
+					fclose (pFile);
+				}
+				presults = "";
 			}
 		}
 	}
