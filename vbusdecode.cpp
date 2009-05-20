@@ -21,8 +21,11 @@ void giveresults(char parray[])
 	} else {
 		f = (allframes[offset] ) * multiplier;
 	}
-
-	sprintf(results, "%#.1f ",f);
+	if (multiplier < 1) {
+		sprintf(results, "%.1f ",f);
+	} else {
+		sprintf(results, "%.0f ",f);
+	}
 	presults.append(results);
 }
 
@@ -43,9 +46,7 @@ int decodeheader()
 		model = buffer[3] * 0x100  + buffer[2];
 		a = buffer[7];
 		return a;
-	}
-	else
-	{
+	} else {
 		return 0;
 	}
 }
@@ -68,9 +69,7 @@ unsigned char decodeframe(int x)
 			frame[1] =  buffer[1] + (( buffer[4] >> 1 & 0x01 ) * 0x80 ) ;
 			frame[2] =  buffer[2] + (( buffer[4] >> 2 & 0x01 ) * 0x80 )  ;
 			frame[3] =  buffer[3] + (( buffer[4] >> 3 & 0x01 ) * 0x80 ) ; 
-		}
-		else
-		{
+		} else {
 			frame[0] = 0;
 			frame[1] = 0;
 			frame[2] = 0;
@@ -111,9 +110,7 @@ int main(int argc, char* argv[])
 					if (sw == "-f") {
 						i++;
 						filen = argv[i]; 
-					} 
-					else
-					{
+					} else { 
 						arg_dup = strdup(argv[i]);
 						giveresults(arg_dup);
 						free(arg_dup);
