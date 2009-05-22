@@ -1,12 +1,16 @@
 // sample  cat ../raw.log | ./a.out  0,15,0.1 2,15,0.1 4,15,0.1 6,15,0.1 8,7,1 9,7,1 20,16,1 22,16,1000 24,16,1000000
 // will give temp of s1,s2,s3,s4 pumpspeed pump1,pump2 and watts, Kw, Mw for a resol deltasol bs plus
+// todo add support for + , adds value to previous 20,16,1 22,16,1000+ 24,16,1000000+
+// todo add support for larger than 16bits 12,32,1
+// todo add support for bits 12,1,1 i.e. if length is 1, we are doing bits, therefore 3rd value is bit position, not multiplier
+
 #include <stdio.h>
 #include <iostream>
 using namespace std;
 
 int model;
 unsigned char frame[4];
-unsigned char allframes[1026];
+unsigned char allframes[256];
 string presults;
 
 void giveresults(char parray[])
@@ -16,16 +20,20 @@ void giveresults(char parray[])
 	int offset = atoi(strtok (parray,","));
 	int length = atoi(strtok (NULL, ","));
 	float multiplier =  atof(strtok (NULL, ","));
-	if ( (length -1) /8) {
+	if ( ((length -1) /8) && (multiplier !=0 )){
 		f = (allframes[offset] + (allframes[offset+1]*0x100)) * multiplier;
-	} else {
+	} else if (multiplier !=0 ) {
 		f = (allframes[offset] ) * multiplier;
+	}	
+	if (multiplier == 0) {
+		int time  = (allframes[offset] + (allframes[offset+1]*0x100));
+		int hours = time/60;
+		int mins = time - (hours*60);
+		sprintf(results, "%02d:%02d ",hours,mins);
 	}
-	if (multiplier < 1) {
-		sprintf(results, "%.1f ",f);
-	} else {
-		sprintf(results, "%.0f ",f);
-	}
+	else if (multiplier < 1)  sprintf(results, "%.1f ",f);
+	else  sprintf(results, "%.0f ",f);
+
 	presults.append(results);
 }
 
