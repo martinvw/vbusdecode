@@ -1,6 +1,8 @@
-// arguments [-f] fields
+// arguments [-f filename] [-c count]  fields
 // -f filename
 //	will put last retrieved value to filename , overwriting anyother contents
+// -c count
+//      decode count amount of full frames, then exit
 // fields
 //	4 values , seperated by commas, where value
 // 	 	1 = offset from start of data, this value is bytes
@@ -15,8 +17,8 @@
 // to get this information for your model, check the wiki or look in the Vbus XMl file in Resol lite.
 //
 // example:
-// cat raw.log | ./a.exe 0,15,0.1,0 2,15,0.1,0 4,15,0.1,0 6,15,0.1,0 8,7,1,0 9,7,1,0 20,16,1,p 22,16,1000,p 24,16,1000000,0 12,16,0,t 10,1,0,0 10,1,1,0
-// will give temp of s1,s2,s3,s4 pumpspeed pump1,pump2 and total of watts, formatted system time, r1 and r2 status for a resol deltasol bs plus
+// cat raw.log | ./a.out -f rrdvals -c 1  0,15,0.1,0 2,15,0.1,0 4,15,0.1,0 6,15,0.1,0 8,7,1,0 9,7,1,0 20,16,1,p 22,16,1000,p 24,16,1000000,0 12,16,0,t 10,1,0,0 10,1,1,0
+// will give temp of s1,s2,s3,s4 pumpspeed pump1,pump2 and total of watts, formatted system time, r1 and r2 status for a resol deltasol bs plus, put them into a file called rrdvals, and exit after decoding one frame successfully
 //45.7 24.6 49.8 29.1 100 0 2609964 14:36 1 0
 
 #include <stdio.h>
@@ -133,8 +135,10 @@ int main(int argc, char* argv[])
 	int framecount;
 	int c=0;
 	FILE * pFile;
+	int decodecount=0;
+	int decodedcount=0;
 
-	while ( fgets(buffer, 2, stdin) != NULL)
+	while (( (decodedcount < decodecount) | (decodecount==0 ) ) && ( fgets(buffer, 2, stdin) != NULL))
 	{
 		a = buffer[0];
 		if ( a ==  0xAA) {
@@ -150,6 +154,7 @@ int main(int argc, char* argv[])
 					allframes[(4*x)+3] = frame[3];
 				}
 				// if all crcs are ok
+				decodedcount++;
 				if (c == 0){
 					string filen = "stdout";
 					for(int i = 1; i < argc; i++)
@@ -158,6 +163,9 @@ int main(int argc, char* argv[])
 						if (sw == "-f") {
 							i++;
 							filen = argv[i]; 
+						} else if (sw == "-c") {
+							i++;
+							decodecount = atoi(argv[i]);
 						} else { 
 							arg_dup = strdup(argv[i]);
 							giveresults(arg_dup);
