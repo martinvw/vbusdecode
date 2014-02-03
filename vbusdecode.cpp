@@ -24,9 +24,8 @@
 
 #include <stdio.h>
 #include <iostream>
-//below required by some OS's
-//#include <stdlib.h>
-//#include <cstring>
+#include <stdlib.h>
+#include <cstring>
 
 using namespace std;
 
