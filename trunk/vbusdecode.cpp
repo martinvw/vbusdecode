@@ -24,6 +24,10 @@
 
 #include <stdio.h>
 #include <iostream>
+//below required by some OS's
+//#include <stdlib.h>
+//#include <cstring>
+
 using namespace std;
 
 int adding = 0,model=0;
@@ -85,7 +89,7 @@ int decodeheader()
     char  buffer[10];
     unsigned char a;
     unsigned char b;
-    if (scanf("%c%c%c%c%c%c%c%c%c",&buffer[0],&buffer[1],&buffer[2],&buffer[3],&buffer[4],&buffer[5],&buffer[6],&buffer[7],&buffer[8],&buffer[9]) != 1)
+    if (scanf("%c%c%c%c%c%c%c%c%c",&buffer[0],&buffer[1],&buffer[2],&buffer[3],&buffer[4],&buffer[5],&buffer[6],&buffer[7],&buffer[8]) != 1)
     {
         a = buffer[0] + buffer[1] + buffer[2] + buffer[3] + buffer[4] + buffer[5] + buffer[6] + buffer[7];
         b = ~ a;
