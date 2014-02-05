@@ -1,4 +1,4 @@
-// arguments [-d] [-f filename] [-c count]  fields
+// arguments [-d] [-s source addr] [-f filename] [-c count]  fields
 // -f filename
 //      will put last retrieved value to filename , overwriting anyother contents
 //
