@@ -38,6 +38,9 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <stdlib.h>		
+#include <cstring>
+
 using namespace std;
 
 int debug = 0,adding = 0,model=0,modelid=0;
