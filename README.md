@@ -4,8 +4,7 @@ Welcome to the vbusdecoder
 
 Originally developed by: andywhite
 
-.. image:: https://travis-ci.org/martinvw/vbusdecode.png?branch=master
-    :target: https://travis-ci.org/martinvw/vbusdecode
+[![Build Status](https://travis-ci.org/martinvw/vbusdecode.svg?branch=master)](https://travis-ci.org/martinvw/vbusdecode)
 
 # Introduction #
 
