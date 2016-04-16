@@ -1,5 +1,9 @@
 language: cpp
 
+compiler:
+  - clang
+  - gcc
+
 install: make clean compile
 
 script: make test
