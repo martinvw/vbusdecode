@@ -4,6 +4,22 @@ compiler:
   - clang
   - gcc
 
+env:
+  global:
+  # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+  #   via the "travis encrypt" command using the project repo's public key
+  - secure: "Ypq/Zdr+eo6VrmaWcyIvoUVyfWzEGvf6w2HlB2d9KAa1tVOO9z/JlkROiDj0ObIN1jOJja2CzYw1nVICnHgtrkS6NQJX2kV4mj1ES8ix09m6wazzYd4tae25vNE/aZbO+26hgPB96Dpf37O4UehAc8/ZsoF6D2voHEovwblOSb9lEa5YG85XM6BVVy7F2ORL3azKH6MfRlfcnQfi2jNPnKhJSh5+MWX08I60ULoDfYoiy5ABK8iLN4PyX59eyO3Z5Z6XQfexHL+KtOYuPWZnnc816hty18bsbzSUnrcADbL135rdUGB7kD8piDFSHAJ1CcrC4ix9/Kx3d9MDshbrMTO0Je730MIR91U4A3FVN4yZ6ljCNxlw/qbAY3Haw60DzONc9+4j6zpzMyN9t/nU64n0s8pEa0klv/tjSCkZ8cRa8zWu7HZPnBK8DC8d++NmNbX8aiURe4OfFJRf4OLqIfJ7X6EUnnBZ81LwNRU1uc9K3EkZ1FIdZPcaxR43oWH3qC25Ul2B1b+0Bo00eJpwE+3BxqxfgQ+qp7HQSJE3+vi/6ZrZFLsfj0n1oyUBApU2ggdsGHCtLZZ9MGhxbQq1yR184vHW6iy+f0uyGHTvsRAWoZo3H6prQgBzMkmYqf9Usbh7Kpt2XhWDIEslmQruNytP+FfP2KYiXvHSBhAVZ1k="
+
+addons:
+  coverity_scan:
+    project:
+      name: "martinvw/vbusdecode"
+      description: "Build submitted via Travis CI"
+    notification_email: martinvw@mtin.nl
+    build_command_prepend: "make clean"
+    build_command:   "make compile test"
+    branch_pattern: master
+
 install: make clean compile
 
 script: make test
