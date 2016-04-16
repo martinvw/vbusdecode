@@ -52,7 +52,8 @@ void giveresults(char parray[])
 {
     string formatter;
     char *format = NULL;
-    float f, Fahrenheit;
+    float f;
+    float Fahrenheit;
     char results[24];
     int offset = atoi(strtok (parray,","));
     int length = atoi(strtok (NULL, ","));
@@ -68,16 +69,22 @@ void giveresults(char parray[])
                 } else if ( formatter == "y" ) {
                     sprintf(results, "%s ",f ? "Yes" : "No");
                 } else if ( formatter == "o" ) sprintf(results, "%s ",f ? "On" : "Off");
-        } else sprintf(results, "%.0f ",f);
+        } else {
+            sprintf(results, "%.0f ",f);
+        }
         presults.append(results);
     } else {
         float multiplier = atof(strtok (NULL, ","));
         if (((length -1) /24) ) {
-            f = (allframes[offset] + (allframes[offset+1]*0x100) + (allframes[offset+2]*0x1000) + (allframes[offset+3]*0x10000) ) * multiplier;
+            int i = (allframes[offset] + (allframes[offset+1]*0x100) + (allframes[offset+2]*0x1000) + (allframes[offset+3]*0x10000) );
+            f = i * multiplier;
         } else if (((length -1) /16) ) {
+            int i = (allframes[offset] + (allframes[offset+1]*0x100) + (allframes[offset+2]*0x1000) );
+	    cout << i << "\n";
             f = (allframes[offset] + (allframes[offset+1]*0x100) + (allframes[offset+2]*0x1000) ) * multiplier;
         } else if (((length -1) /8) ) {
-            f = (allframes[offset] + (allframes[offset+1]*0x100)) * multiplier;
+            short i = (allframes[offset] + (allframes[offset+1]*0x100) );
+            f = i * multiplier;
         } else if (multiplier !=0 ) {
             f = (allframes[offset] ) * multiplier;
         }
@@ -111,6 +118,17 @@ void giveresults(char parray[])
     }
 }
 
+unsigned char vbusCalcCRC(const char *buffer, int offset, int length)
+{
+ unsigned char crc;
+ int i;
+ crc = 0x7F;
+ for (i = 0; i < length; i++) {
+     crc = (crc - buffer [offset + i]) & 0x7F;
+ }
+ return crc;
+}
+
 int decodeheader()
 {
     char  buffer[15];
@@ -118,19 +136,18 @@ int decodeheader()
     unsigned char b;
     if (scanf("%c%c%c%c%c%c%c%c%c",&buffer[0],&buffer[1],&buffer[2],&buffer[3],&buffer[4],&buffer[5],&buffer[6],&buffer[7],&buffer[8]) != 1)
     {
-        a = buffer[0] + buffer[1] + buffer[2] + buffer[3] + buffer[4] + buffer[5] + buffer[6] + buffer[7];
+        a = buffer[8];
         if ( buffer[4] == 0x10 )
         {
           if ( debug == 1 ) std::cout << "Protocol Version 1.0\n";
-          b = ~ a;
-          a = buffer[8];
+          b = vbusCalcCRC(buffer, 0, 8);
         } else if ( buffer[4] == 0x20 ) {
           if ( debug == 1 ) std::cout << "Protocol Version 2.0\n";
           if ( buffer[6] * 0x100  + buffer[5] == 0x0500 )
           {
             if ( debug == 1 ) std::cout << "Broadcast for Clearance\n";
           }
-          b = a;
+	  b = a;
         } else {
           if ( debug == 1 ) std::cout << "Unknown Protocol Version\n";
         }
@@ -140,8 +157,8 @@ int decodeheader()
     {
         model = buffer[3] * 0x100  + buffer[2];
         if ( debug == 1 ) fprintf(stdout,"Model: 0x%02x \n", model);
-        a = buffer[7];
-        return a;
+        if ( debug == 1 ) fprintf(stdout,"Frames: 0x%01x \n", buffer[7]);
+        return buffer[7];
     } else {
         if ( debug == 1 ) std::cout << "Bad Header CRC\n";
         return 0;
@@ -172,12 +189,21 @@ int decodeframe(int x)
             frame[3] = 0;
             if ( debug == 1 ) std::cout << "Bad Frame CRC\n";
         }
+    } else {
+        if ( debug == 1 ) std::cout << "Scanf of buffer failed\n";
     }
     return a - b;
 }
 
 int main(int argc, char* argv[])
 {
+    for (int i = 1; i < argc; i++) {
+        if ((string)argv[i] == "-d") {
+            std::cout << "Enabling debug\n";
+            debug = 1;
+        }
+    }
+    
     char  buffer[2];
     unsigned char a;
     char* arg_dup;
@@ -188,7 +214,9 @@ int main(int argc, char* argv[])
         a = buffer[0];
         if ( a ==  0xAA) {
             if ( debug == 1 ) std::cout << "SyncByte\n";
-            framecount  =  decodeheader();
+            c = 0;
+
+            framecount = decodeheader();
             if (framecount !=0 )
             {
                 for ( int x = 0; x < framecount ; x++ )
@@ -199,6 +227,7 @@ int main(int argc, char* argv[])
                     allframes[(4*x)+2] = frame[2];
                     allframes[(4*x)+3] = frame[3];
                 }
+
                 // if all crcs are ok
                 decodedcount++;
                 if (c == 0) {
@@ -219,20 +248,25 @@ int main(int argc, char* argv[])
                             modelid = strtol(argv[i],NULL,16);
                         } else {
                             if (modelid == 0 || modelid == model) {
-                            arg_dup = strdup(argv[i]);
-                            giveresults(arg_dup);
-                            free(arg_dup);
+                                
+                                arg_dup = strdup(argv[i]);
+                                giveresults(arg_dup);
+                                free(arg_dup);
+                            } else {
+                                if ( debug == 1 ) std::cout << "Ignoring, model does not match\n";
                             }
                         }
                     }
-                    if (filen == "stdout")
-                    {
+                    if (filen == "stdout") {
                         if ( presults != "" ) fprintf(stdout,"%s\n",presults.c_str());
+                        else std::cout << "Result buffer is empty\n";
                     } else {
                         pFile = fopen (filen.c_str(),"w");
                         fprintf (pFile,"%s\n",presults.c_str());
                         fclose (pFile);
                     }
+                } else {
+                    if ( debug == 1 ) std::cout << "CRC check of frames failed!\n";
                 }
                 presults = "";
             } else {
@@ -242,4 +276,3 @@ int main(int argc, char* argv[])
     }
     return 0;
 }
-
