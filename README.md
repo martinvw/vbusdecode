@@ -1,3 +1,12 @@
+=============================
+Welcome to the vbusdecoder
+=============================
+
+Originally developed by: andywhite
+
+.. image:: https://travis-ci.org/martinvw/vbusdecode.png?branch=master
+    :target: https://travis-ci.org/martinvw/vbusdecode
+
 # Introduction #
 
 This is a utility for use with resol solar controllers (or rebranded alternatives)
