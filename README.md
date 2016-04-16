@@ -16,17 +16,17 @@ Resol Deltasol BS Plus
 > cat /dev/ttyUSB0 | vbusdecode 0,15,0.1 2,15,0.1 4,15,0.1 6,15,0.1 8,7,1 9,7,1
 > Will give out, temp of S1,S2,S3,S4 and pump1 speed and pump2
 
-Included is a sample of a serial port capture , raw.log, from a Resol Deltasol BS Plus ,so can you test with;
+Included is a sample of a serial port capture , raw.log, from a Resol Deltasol BS Plus, so can you test with;
 > cat raw.log | vbusdecode 0,15,0.1 2,15,0.1 4,15,0.1 6,15,0.1 8,7,1 9,7,1
 
 ## Compiling ##
 
 Tested under linux, osx and windows under cygwin.
 
-just compile
+just make
 
 ```
-g++ vbusdecode.c -o vbusdecode
+make all
 ```
 
 ## Arguments  ##
@@ -78,4 +78,3 @@ will output
 ```
 114.3 24.6 49.8 29.1 100 0 2609964 14:36 Yes False
 ```
-
