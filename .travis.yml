@@ -1,0 +1,5 @@
+language: cpp
+
+install: make clean compile
+
+script: make test
