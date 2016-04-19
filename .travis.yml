@@ -21,9 +21,8 @@ addons:
     branch_pattern: master
 
 before_install:
-  - pip install --user cpp-coveralls
+  - pip install --upgrade pip && pip install --user cpp-coveralls
 
-install: make clean compile-coverage && make test
-
-after_success:
+install: 
+  - make clean compile-coverage && make test
   - coveralls --exclude lib --exclude tests --gcov-options '\-lp'
