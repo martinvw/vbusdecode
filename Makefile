@@ -16,6 +16,10 @@ compile:
 	mkdir -p target
 	$(CC) $(SOURCES) $(FLAGS) -o $(EXEC)
 
+compile-coverage:
+	mkdir -p target
+	$(CC) $(SOURCES) $(FLAGS) --coverage -o $(EXEC)
+
 test: test1 test_negative
 
 install:
