@@ -4,6 +4,7 @@ Welcome to the vbusdecoder
 [![Build Status](https://travis-ci.org/martinvw/vbusdecode.svg?branch=master)](https://travis-ci.org/martinvw/vbusdecode)
 [![Coverage Status](https://coveralls.io/repos/github/martinvw/vbusdecode/badge.svg?branch=master)](https://coveralls.io/github/martinvw/vbusdecode?branch=master)
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/8588/badge.svg)](https://scan.coverity.com/projects/martinvw-vbusdecode)
+[![GitHub issues](https://img.shields.io/github/issues/badges/shields.svg?maxAge=2592000)](https://github.com/martinvw/vbusdecode/issues)
 
 Originally developed by: andywhite
 
