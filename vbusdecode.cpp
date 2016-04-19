@@ -6,7 +6,7 @@
 //
 // -d Debug, prints more info
 //
-// -s filter for this source addr/model addr, value in hex 
+// -s filter for this source addr/model addr, value in hex
 //
 // fields
 //      4 values , seperated by commas, where value
@@ -38,7 +38,7 @@
 
 #include <stdio.h>
 #include <iostream>
-#include <stdlib.h>		
+#include <stdlib.h>
 #include <cstring>
 
 using namespace std;
@@ -48,8 +48,7 @@ float totals;
 string presults;
 unsigned char frame[4],allframes[256];
 
-void giveresults(char parray[])
-{
+void giveresults(char parray[]) {
     string formatter;
     char *format = NULL;
     float f;
@@ -64,11 +63,11 @@ void giveresults(char parray[])
         format = strtok (NULL, ",");
         if (format != NULL) {
             formatter = format;
-                if ( formatter == "l" ) {
-                    sprintf(results, "%s ",f ? "True" : "False");
-                } else if ( formatter == "y" ) {
-                    sprintf(results, "%s ",f ? "Yes" : "No");
-                } else if ( formatter == "o" ) sprintf(results, "%s ",f ? "On" : "Off");
+            if ( formatter == "l" ) {
+                sprintf(results, "%s ",f ? "True" : "False");
+            } else if ( formatter == "y" ) {
+                sprintf(results, "%s ",f ? "Yes" : "No");
+            } else if ( formatter == "o" ) sprintf(results, "%s ",f ? "On" : "Off");
         } else {
             sprintf(results, "%.0f ",f);
         }
@@ -80,7 +79,7 @@ void giveresults(char parray[])
             f = i * multiplier;
         } else if (((length -1) /16) ) {
             int i = (allframes[offset] + (allframes[offset+1]*0x100) + (allframes[offset+2]*0x1000) );
-	    cout << i << "\n";
+            cout << i << "\n";
             f = (allframes[offset] + (allframes[offset+1]*0x100) + (allframes[offset+2]*0x1000) ) * multiplier;
         } else if (((length -1) /8) ) {
             short i = (allframes[offset] + (allframes[offset+1]*0x100) );
@@ -102,12 +101,15 @@ void giveresults(char parray[])
             } else if (formatter == "f" ) {
                 Fahrenheit = (f * 1.8 ) + 32;
                 if (multiplier < 1) {
-                   sprintf(results, "%.1f ",Fahrenheit);
+                    sprintf(results, "%.1f ",Fahrenheit);
                 } else sprintf(results, "%.0f ",Fahrenheit);
             }
         } else if (multiplier < 1) {
             sprintf(results, "%.1f ",f);
-        } else sprintf(results, "%.0f ",f);
+        } else {
+            sprintf(results, "%.0f ",f);
+        }
+
         if ((formatter != "p") && (adding == 1)) {
             totals = totals + f;
             sprintf(results, "%.0f ",totals);
@@ -120,64 +122,55 @@ void giveresults(char parray[])
 
 unsigned char vbusCalcCRC(const char *buffer, int offset, int length)
 {
- unsigned char crc;
- int i;
- crc = 0x7F;
- for (i = 0; i < length; i++) {
-     crc = (crc - buffer [offset + i]) & 0x7F;
- }
- return crc;
+    unsigned char crc = 0x7F;
+    for (int i = 0; i < length; i++) {
+        crc = (crc - buffer [offset + i]) & 0x7F;
+    }
+    return crc;
 }
 
 int decodeheader()
 {
     char  buffer[15];
-    unsigned char a;
-    unsigned char b;
+    unsigned char a = 0;
+    unsigned char b = 0;
     if (scanf("%c%c%c%c%c%c%c%c%c",&buffer[0],&buffer[1],&buffer[2],&buffer[3],&buffer[4],&buffer[5],&buffer[6],&buffer[7],&buffer[8]) != 1)
     {
         a = buffer[8];
-        if ( buffer[4] == 0x10 )
-        {
-          if ( debug == 1 ) std::cout << "Protocol Version 1.0\n";
-          b = vbusCalcCRC(buffer, 0, 8);
+        if ( buffer[4] == 0x10 ) {
+            if ( debug == 1 ) std::cout << "Protocol Version 1.0\n";
+            b = vbusCalcCRC(buffer, 0, 8);
         } else if ( buffer[4] == 0x20 ) {
-          if ( debug == 1 ) std::cout << "Protocol Version 2.0\n";
-          if ( buffer[6] * 0x100  + buffer[5] == 0x0500 )
-          {
-            if ( debug == 1 ) std::cout << "Broadcast for Clearance\n";
-          }
-	  b = a;
+            if ( debug == 1 ) std::cout << "Protocol Version 2.0\n";
+            if ( buffer[6] * 0x100  + buffer[5] == 0x0500 ) {
+                if ( debug == 1 ) std::cout << "Broadcast for Clearance\n";
+            }
+            b = a;
         } else {
-          if ( debug == 1 ) std::cout << "Unknown Protocol Version\n";
+            if ( debug == 1 ) std::cout << "Unknown Protocol Version\n";
+        }
+
+        if (  a == b ) {
+            model = buffer[3] * 0x100  + buffer[2];
+            if ( debug == 1 ) fprintf(stdout,"Model: 0x%02x \n", model);
+            if ( debug == 1 ) fprintf(stdout,"Frames: 0x%01x \n", buffer[7]);
+            return buffer[7];
         }
     }
 
-    if (  a == b )
-    {
-        model = buffer[3] * 0x100  + buffer[2];
-        if ( debug == 1 ) fprintf(stdout,"Model: 0x%02x \n", model);
-        if ( debug == 1 ) fprintf(stdout,"Frames: 0x%01x \n", buffer[7]);
-        return buffer[7];
-    } else {
-        if ( debug == 1 ) std::cout << "Bad Header CRC\n";
-        return 0;
-    }
+    if ( debug == 1 ) std::cout << "Bad Header CRC\n";
+    return 0;
 }
 
-int decodeframe(int x)
-{
-    char  buffer[7] ;
-    unsigned char a;
-    unsigned char b;
-    if (scanf("%c%c%c%c%c%c",&buffer[0],&buffer[1],&buffer[2],&buffer[3],&buffer[4],&buffer[5]) != 1)
-    {
-        a = buffer[0]  + buffer[1]  + buffer[2] + buffer[3] + buffer[4] ;
-        b = 0;
-        b =  (( ~a | 0x80) - 0x80 ) ;
+int decodeframe(int x) {
+    char buffer[7];
+    unsigned char a = 0;
+    unsigned char b = 0;
+    if (scanf("%c%c%c%c%c%c",&buffer[0],&buffer[1],&buffer[2],&buffer[3],&buffer[4],&buffer[5]) != 1) {
+        unsigned char t = buffer[0] + buffer[1] + buffer[2] + buffer[3] + buffer[4] ;
+        b = (( ~t | 0x80) - 0x80 );
         a = buffer[5];
-        if ( a == b )
-        {
+        if ( a == b ) {
             frame[0] =  buffer[0] + (( buffer[4] & 0x01 ) * 0x80 ) ;
             frame[1] =  buffer[1] + (( buffer[4] >> 1 & 0x01 ) * 0x80 ) ;
             frame[2] =  buffer[2] + (( buffer[4] >> 2 & 0x01 ) * 0x80 ) ;
@@ -195,22 +188,20 @@ int decodeframe(int x)
     return a - b;
 }
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
     for (int i = 1; i < argc; i++) {
         if ((string)argv[i] == "-d") {
             std::cout << "Enabling debug\n";
             debug = 1;
         }
     }
-    
+
     char  buffer[2];
     unsigned char a;
     char* arg_dup;
     int framecount,c=0,decodecount=0,decodedcount=0;
     FILE * pFile;
-    while (( (decodedcount < decodecount) | (decodecount==0 ) ) && ( fgets(buffer, 2, stdin) != NULL))
-    {
+    while (( (decodedcount < decodecount) | (decodecount==0 ) ) && ( fgets(buffer, 2, stdin) != NULL)) {
         a = buffer[0];
         if ( a ==  0xAA) {
             if ( debug == 1 ) std::cout << "SyncByte\n";
@@ -242,13 +233,13 @@ int main(int argc, char* argv[])
                             i++;
                             decodecount = atoi(argv[i]);
                         } else if (sw == "-d") {
-                            debug=1;
+                            debug = 1;
                         } else if (sw == "-s") {
                             i++;
                             modelid = strtol(argv[i],NULL,16);
                         } else {
                             if (modelid == 0 || modelid == model) {
-                                
+
                                 arg_dup = strdup(argv[i]);
                                 giveresults(arg_dup);
                                 free(arg_dup);
@@ -258,8 +249,11 @@ int main(int argc, char* argv[])
                         }
                     }
                     if (filen == "stdout") {
-                        if ( presults != "" ) fprintf(stdout,"%s\n",presults.c_str());
-                        else std::cout << "Result buffer is empty\n";
+                        if ( presults != "" ) {
+                            fprintf(stdout,"%s\n",presults.c_str());
+                        } else {
+                            std::cout << "Result buffer is empty\n";
+                        }
                     } else {
                         pFile = fopen (filen.c_str(),"w");
                         fprintf (pFile,"%s\n",presults.c_str());
