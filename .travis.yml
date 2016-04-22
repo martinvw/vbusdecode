@@ -20,9 +20,11 @@ addons:
     build_command:   "make compile test"
     branch_pattern: master
 
-before_install:
+install:
   - pip install --user cpp-coveralls
 
-install: 
+script:
   - make clean compile-coverage && make test
+
+after_success:
   - coveralls --exclude lib --exclude tests --gcov-options '\-lp'
