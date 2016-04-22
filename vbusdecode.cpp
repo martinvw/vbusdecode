@@ -86,6 +86,8 @@ void giveresults(char parray[]) {
             f = i * multiplier;
         } else if (multiplier !=0 ) {
             f = (allframes[offset] ) * multiplier;
+        } else {
+            f = 0;
         }
         format = strtok (NULL, ",");
         if (format != NULL) {
