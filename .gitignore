@@ -2,3 +2,4 @@
 vbusdecode
 .o
 target/
+.vscode
