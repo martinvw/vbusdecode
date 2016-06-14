@@ -2,4 +2,4 @@
 vbusdecode
 .o
 target/
-.vscode
+.vscode/.browse*
