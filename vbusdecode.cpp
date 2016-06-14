@@ -36,10 +36,12 @@
 // 114.3 24.6 49.8 29.1 100 0 2609964 14:36 Yes False
 
 
-#
-include < stdio.h > #include < iostream > #include < stdlib.h > #include < cstring >
+#include <stdio.h> 
+#include <iostream> 
+#include <stdlib.h> 
+#include <cstring>
 
-    using namespace std;
+using namespace std;
 
 int debug = 0, adding = 0, model = 0, modelid = 0;
 float totals;
