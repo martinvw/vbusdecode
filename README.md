@@ -1,6 +1,5 @@
-=============================
-Welcome to the vbusdecoder
-=============================
+# Welcome to the vbusdecoder
+
 [![Build Status](https://travis-ci.org/martinvw/vbusdecode.svg?branch=master)](https://travis-ci.org/martinvw/vbusdecode)
 [![Coverage Status](https://coveralls.io/repos/github/martinvw/vbusdecode/badge.svg?branch=master)](https://coveralls.io/github/martinvw/vbusdecode?branch=master)
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/8588/badge.svg)](https://scan.coverity.com/projects/martinvw-vbusdecode)
@@ -21,7 +20,9 @@ So here is my first attempt, and instead of building in the specifics for the mo
 For example;
 
 Resol Deltasol BS Plus
+
 > cat /dev/ttyUSB0 | vbusdecode 0,15,0.1 2,15,0.1 4,15,0.1 6,15,0.1 8,7,1 9,7,1
+>
 > Will give out, temp of S1,S2,S3,S4 and pump1 speed and pump2
 
 Included is a sample of a serial port capture , raw.log, from a Resol Deltasol BS Plus, so can you test with;
@@ -63,7 +64,7 @@ To get this information for your model, check the wiki or look in the Vbus XMl f
 
 ## Examples ##
 
-###Example 1
+### Example 1
 
 ```
 cat raw.log | ./a.out -f rrdvals -c 1 0,15,0.1 2,15,0.1 4,15,0.1 6,15,0.1 8,7,1 9,7,1 20,16,1,p 22,16,1000,p 24,16,1000000 12,16,0,t 10,1,0 10,1,1
@@ -75,7 +76,7 @@ will give temp of s1,s2,s3,s4 pumpspeed pump1,pump2 and total of watts, formatte
 45.7 24.6 49.8 29.1 100 0 2609964 14:36 1 0
 ```
 
-###Example 2
+### Example 2
 
 ```
 cat raw.log | ./a.out -s 0x4221 -c 1 0,15,0.1,f 2,15,0.1 4,15,0.1 6,15,0.1 8,7,1 9,7,1 20,16,1,p 22,16,1000,p 24,16,1000000 12,16,0,t 10,1,0,y 10,1,1,l
